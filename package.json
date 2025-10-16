@@ -7,10 +7,12 @@
   "files": [
     "dist",
     "src",
+    "public",
     "registry.json"
   ],
   "scripts": {
     "build": "webpack && tsc --emitDeclarationOnly",
+    "build:registry": "node scripts/build-registry.js",
     "prepublishOnly": "npm run build"
   },
   "keywords": [

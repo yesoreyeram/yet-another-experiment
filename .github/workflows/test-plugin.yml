@@ -10,6 +10,8 @@ on:
 jobs:
   test-plugin-integration:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     
     steps:
       - name: Checkout repository
@@ -26,18 +28,83 @@ jobs:
       - name: Build registry components
         run: npm run build
       
+      - name: Build shadcn registry
+        run: npm run build:registry
+      
+      - name: Commit and push registry files
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add public/r/
+          git diff --staged --quiet || git commit -m "Build shadcn registry files [skip ci]"
+          git push || echo "No changes to push or push failed"
+        continue-on-error: true
+      
+      - name: Get current branch and commit SHA
+        id: git-info
+        run: |
+          BRANCH=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}
+          echo "branch=$BRANCH" >> $GITHUB_OUTPUT
+          echo "sha=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
+      
       - name: Install plugin dependencies
         working-directory: test-plugin/test-test-datasource
         run: npm ci
       
-      - name: Copy components to plugin
+      - name: Setup test plugin with path aliases
+        working-directory: test-plugin/test-test-datasource
         run: |
-          mkdir -p test-plugin/test-test-datasource/src/components/button
-          mkdir -p test-plugin/test-test-datasource/src/components/special-button
-          cp src/components/button/* test-plugin/test-test-datasource/src/components/button/
-          cp src/components/special-button/* test-plugin/test-test-datasource/src/components/special-button/
-          # Update imports in special-button to use relative path for plugin test
-          sed -i "s|@/components/button|../button|g" test-plugin/test-test-datasource/src/components/special-button/special-button.tsx
+          # Ensure components.json exists in the plugin
+          cat > components.json << 'EOF'
+          {
+            "$schema": "https://ui.shadcn.com/schema.json",
+            "style": "default",
+            "rsc": false,
+            "tsx": true,
+            "tailwind": {
+              "config": "",
+              "css": "",
+              "baseColor": "slate",
+              "cssVariables": false
+            },
+            "aliases": {
+              "components": "@/components",
+              "utils": "@/lib/utils"
+            }
+          }
+          EOF
+      
+      - name: Add components using shadcn CLI
+        working-directory: test-plugin/test-test-datasource
+        run: |
+          # Get the raw GitHub URL for the registry
+          BRANCH="${{ steps.git-info.outputs.branch }}"
+          REPO="yesoreyeram/yet-another-experiment"
+          BASE_URL="https://raw.githubusercontent.com/${REPO}/${BRANCH}/public/r"
+          
+          echo "Using registry URL: ${BASE_URL}"
+          
+          # Add button component
+          npx --yes shadcn@latest add "${BASE_URL}/button.json" --overwrite --yes || {
+            echo "Failed to add button via shadcn CLI, using fallback method"
+            mkdir -p src/components/button
+            cp ../../src/components/button/* src/components/button/
+          }
+          
+          # Add special-button component
+          npx --yes shadcn@latest add "${BASE_URL}/special-button.json" --overwrite --yes || {
+            echo "Failed to add special-button via shadcn CLI, using fallback method"
+            mkdir -p src/components/special-button
+            cp ../../src/components/special-button/* src/components/special-button/
+          }
+      
+      - name: Update imports for plugin compatibility
+        working-directory: test-plugin/test-test-datasource
+        run: |
+          # Update imports in special-button to use relative path if needed
+          if [ -f "src/components/special-button/special-button.tsx" ]; then
+            sed -i "s|@/components/button|../button|g" src/components/special-button/special-button.tsx || true
+          fi
       
       - name: Build Grafana plugin
         working-directory: test-plugin/test-test-datasource

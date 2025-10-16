@@ -48,26 +48,34 @@ function App() {
 
 ## Installation
 
-### Install via npm
-
-```bash
-npm install yet-another-experiment @grafana/ui react react-dom
-```
-
 ### Using shadcn CLI (Recommended)
 
-This registry is compatible with shadcn-style component copying. You can use a custom CLI or manually copy components.
+This registry provides a shadcn-compatible component registry that can be used with the shadcn CLI.
 
-#### Important Notes on Path Aliases
+#### Quick Start with shadcn CLI
 
-**When copying components:**
-- Components in this registry use `@/components/...` imports (path aliases)
-- If your project doesn't use path aliases, you'll need to update the imports to relative paths
-- Example: Change `import { Button } from '@/components/button'` to `import { Button } from '../button'`
+1. **Ensure you have a `components.json` file in your project root:**
 
-#### Manual Component Installation
+```json
+{
+  "$schema": "https://ui.shadcn.com/schema.json",
+  "style": "default",
+  "rsc": false,
+  "tsx": true,
+  "tailwind": {
+    "config": "",
+    "css": "",
+    "baseColor": "slate",
+    "cssVariables": false
+  },
+  "aliases": {
+    "components": "@/components",
+    "utils": "@/lib/utils"
+  }
+}
+```
 
-1. **Set up path aliases in your project (Recommended)**
+2. **Set up path aliases in your project:**
 
 Add to your `tsconfig.json`:
 ```json
@@ -92,15 +100,56 @@ Add to your `webpack.config.js` (or similar bundler config):
 }
 ```
 
-**Note for Grafana Plugins:** If you're using `@grafana/create-plugin`, the webpack config is managed by the plugin tools. You may need to use relative imports instead of path aliases, or configure path alias support according to Grafana's plugin development guidelines.
+3. **Install components using shadcn CLI:**
 
-2. **Install required dependencies**
+```bash
+# Add Button component
+npx shadcn@latest add https://raw.githubusercontent.com/yesoreyeram/yet-another-experiment/main/public/r/button.json
+
+# Add SpecialButton component (includes Button as dependency)
+npx shadcn@latest add https://raw.githubusercontent.com/yesoreyeram/yet-another-experiment/main/public/r/special-button.json
+```
+
+4. **Install required dependencies:**
 
 ```bash
 npm install @grafana/ui react react-dom
 ```
 
-3. **Copy component files**
+#### Available Registry Components
+
+- **button**: `https://raw.githubusercontent.com/yesoreyeram/yet-another-experiment/main/public/r/button.json`
+- **special-button**: `https://raw.githubusercontent.com/yesoreyeram/yet-another-experiment/main/public/r/special-button.json`
+- **index** (all components): `https://raw.githubusercontent.com/yesoreyeram/yet-another-experiment/main/public/r/index.json`
+
+### Install via npm
+
+```bash
+npm install yet-another-experiment @grafana/ui react react-dom
+```
+
+### Manual Component Installation
+
+If you prefer not to use the shadcn CLI, you can manually copy components:
+
+#### Important Notes on Path Aliases
+
+**When copying components:**
+- Components in this registry use `@/components/...` imports (path aliases)
+- If your project doesn't use path aliases, you'll need to update the imports to relative paths
+- Example: Change `import { Button } from '@/components/button'` to `import { Button } from '../button'`
+
+**Note for Grafana Plugins:** If you're using `@grafana/create-plugin`, the webpack config is managed by the plugin tools. You may need to use relative imports instead of path aliases, or configure path alias support according to Grafana's plugin development guidelines.
+
+#### Steps
+
+1. **Install required dependencies**
+
+```bash
+npm install @grafana/ui react react-dom
+```
+
+2. **Copy component files**
 
 For the Button component:
 ```bash
@@ -167,9 +216,12 @@ npm install
 
 # Build the components
 npm run build
+
+# Build the shadcn registry
+npm run build:registry
 ```
 
-The built files will be in the `dist/` directory.
+The built component files will be in the `dist/` directory, and the shadcn registry files will be in the `public/r/` directory.
 
 ## Development
 
@@ -186,6 +238,13 @@ The built files will be in the `dist/` directory.
 │   │       └── index.ts
 │   └── index.ts
 ├── dist/                          # Built output
+├── public/                        # shadcn registry files
+│   └── r/                         # Registry JSON files
+│       ├── index.json             # Registry index
+│       ├── button.json            # Button component registry
+│       └── special-button.json    # SpecialButton component registry
+├── scripts/
+│   └── build-registry.js          # Registry build script
 ├── test-plugin/                   # Grafana plugin integration test
 │   └── test-test-datasource/      # Sample Grafana datasource plugin
 ├── registry.json                  # Component registry metadata
@@ -198,6 +257,17 @@ The built files will be in the `dist/` directory.
 ### Scripts
 
 - `npm run build` - Build the component library
+- `npm run build:registry` - Build the shadcn registry files
+
+### Registry Files
+
+The shadcn registry is automatically generated in the `public/r/` directory:
+
+- `public/r/index.json` - Registry index with all available components
+- `public/r/button.json` - Button component registry
+- `public/r/special-button.json` - SpecialButton component registry
+
+These files are used by the shadcn CLI to add components to your project.
 
 ### Testing with Grafana Plugins
 

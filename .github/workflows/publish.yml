@@ -32,11 +32,15 @@ jobs:
       - name: Build components
         run: npm run build
       
+      - name: Build shadcn registry
+        run: npm run build:registry
+      
       - name: Create registry distribution
         run: |
           mkdir -p registry
           cp -r dist registry/
           cp -r src registry/
+          cp -r public registry/
           cp registry.json registry/
           cp package.json registry/
           cp README.md registry/

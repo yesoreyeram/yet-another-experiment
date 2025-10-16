@@ -54,36 +54,32 @@ jobs:
       - name: Setup test plugin with path aliases
         working-directory: test-plugin/test-test-datasource
         run: |
-          # Ensure components.json exists in the plugin
-          # Keep "style" field as it's required by shadcn CLI validation
-          # Set ui alias to @/components (not @/components/ui) to match our registry structure
+          # Use the same components.json structure as grafana-infinity-datasource
           cat > components.json << 'EOF'
           {
             "$schema": "https://ui.shadcn.com/schema.json",
             "style": "new-york",
-            "rsc": false,
             "tsx": true,
+            "rsc": false,
             "tailwind": {
-              "config": "tailwind.config.js",
-              "css": "src/styles.css",
-              "baseColor": "slate",
+              "config": "",
+              "css": "src/globals.css",
+              "baseColor": "neutral",
               "cssVariables": false,
               "prefix": ""
             },
             "aliases": {
               "components": "@/components",
-              "utils": "@/lib/utils",
-              "ui": "@/components",
+              "utils": "@/utils",
               "lib": "@/lib",
               "hooks": "@/hooks"
             }
           }
           EOF
           
-          # Create dummy tailwind config and css file (required for validation)
-          touch tailwind.config.js
+          # Create dummy css file (required for validation)
           mkdir -p src
-          touch src/styles.css
+          touch src/globals.css
       
       - name: Add components via shadcn CLI (using local registry)
         working-directory: test-plugin/test-test-datasource

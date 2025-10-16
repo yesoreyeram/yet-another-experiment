@@ -77,26 +77,19 @@ jobs:
       - name: Add components using shadcn CLI
         working-directory: test-plugin/test-test-datasource
         run: |
-          # Get the raw GitHub URL for the registry
-          BRANCH="${{ steps.git-info.outputs.branch }}"
+          # Get the raw GitHub URL for the registry using commit SHA
+          COMMIT_SHA="${{ steps.git-info.outputs.sha }}"
           REPO="yesoreyeram/yet-another-experiment"
-          BASE_URL="https://raw.githubusercontent.com/${REPO}/${BRANCH}/public/r"
+          BASE_URL="https://raw.githubusercontent.com/${REPO}/${COMMIT_SHA}/public/r"
           
           echo "Using registry URL: ${BASE_URL}"
+          echo "Commit SHA: ${COMMIT_SHA}"
           
           # Add button component
-          npx --yes shadcn@latest add "${BASE_URL}/button.json" --overwrite --yes || {
-            echo "Failed to add button via shadcn CLI, using fallback method"
-            mkdir -p src/components/button
-            cp ../../src/components/button/* src/components/button/
-          }
+          npx --yes shadcn@latest add "${BASE_URL}/button.json" --overwrite --yes
           
           # Add special-button component
-          npx --yes shadcn@latest add "${BASE_URL}/special-button.json" --overwrite --yes || {
-            echo "Failed to add special-button via shadcn CLI, using fallback method"
-            mkdir -p src/components/special-button
-            cp ../../src/components/special-button/* src/components/special-button/
-          }
+          npx --yes shadcn@latest add "${BASE_URL}/special-button.json" --overwrite --yes
       
       - name: Update imports for plugin compatibility
         working-directory: test-plugin/test-test-datasource

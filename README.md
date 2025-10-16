@@ -104,7 +104,11 @@ Add to your `webpack.config.js` (or similar bundler config):
 
 ```bash
 # Add Button component
+# Using main branch (recommended for latest stable version):
 npx shadcn@latest add https://raw.githubusercontent.com/yesoreyeram/yet-another-experiment/main/public/r/button.json
+
+# Or using a specific commit SHA for reproducibility:
+npx shadcn@latest add https://raw.githubusercontent.com/yesoreyeram/yet-another-experiment/4a9eb63b525d4d9f9654a2a95270b09e020d52bc/public/r/button.json
 
 # Add SpecialButton component (includes Button as dependency)
 npx shadcn@latest add https://raw.githubusercontent.com/yesoreyeram/yet-another-experiment/main/public/r/special-button.json
@@ -118,8 +122,12 @@ npm install @grafana/ui react react-dom
 
 #### Available Registry Components
 
-- **button**: `https://raw.githubusercontent.com/yesoreyeram/yet-another-experiment/main/public/r/button.json`
-- **special-button**: `https://raw.githubusercontent.com/yesoreyeram/yet-another-experiment/main/public/r/special-button.json`
+- **button**: 
+  - Latest: `https://raw.githubusercontent.com/yesoreyeram/yet-another-experiment/main/public/r/button.json`
+  - Specific commit: `https://raw.githubusercontent.com/yesoreyeram/yet-another-experiment/<commit-sha>/public/r/button.json`
+- **special-button**: 
+  - Latest: `https://raw.githubusercontent.com/yesoreyeram/yet-another-experiment/main/public/r/special-button.json`
+  - Specific commit: `https://raw.githubusercontent.com/yesoreyeram/yet-another-experiment/<commit-sha>/public/r/special-button.json`
 - **index** (all components): `https://raw.githubusercontent.com/yesoreyeram/yet-another-experiment/main/public/r/index.json`
 
 ### Install via npm

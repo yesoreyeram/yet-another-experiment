@@ -58,9 +58,16 @@ npm install yet-another-experiment @grafana/ui react react-dom
 
 This registry is compatible with shadcn-style component copying. You can use a custom CLI or manually copy components.
 
+#### Important Notes on Path Aliases
+
+**When copying components:**
+- Components in this registry use `@/components/...` imports (path aliases)
+- If your project doesn't use path aliases, you'll need to update the imports to relative paths
+- Example: Change `import { Button } from '@/components/button'` to `import { Button } from '../button'`
+
 #### Manual Component Installation
 
-1. **Set up path aliases in your project**
+1. **Set up path aliases in your project (Recommended)**
 
 Add to your `tsconfig.json`:
 ```json
@@ -84,6 +91,8 @@ Add to your `webpack.config.js` (or similar bundler config):
   },
 }
 ```
+
+**Note for Grafana Plugins:** If you're using `@grafana/create-plugin`, the webpack config is managed by the plugin tools. You may need to use relative imports instead of path aliases, or configure path alias support according to Grafana's plugin development guidelines.
 
 2. **Install required dependencies**
 
@@ -176,8 +185,11 @@ The built files will be in the `dist/` directory.
 │   │       ├── special-button.tsx
 │   │       └── index.ts
 │   └── index.ts
-├── dist/                 # Built output
-├── registry.json         # Component registry metadata
+├── dist/                          # Built output
+├── test-plugin/                   # Grafana plugin integration test
+│   └── test-test-datasource/      # Sample Grafana datasource plugin
+├── registry.json                  # Component registry metadata
+├── components.json                # shadcn CLI configuration
 ├── package.json
 ├── tsconfig.json
 └── webpack.config.js
@@ -186,6 +198,36 @@ The built files will be in the `dist/` directory.
 ### Scripts
 
 - `npm run build` - Build the component library
+
+### Testing with Grafana Plugins
+
+A sample Grafana datasource plugin is included in the `test-plugin/test-test-datasource` directory to demonstrate how to integrate these components into a Grafana plugin.
+
+**To test the integration:**
+
+1. Build the registry components:
+   ```bash
+   npm run build
+   ```
+
+2. Navigate to the test plugin:
+   ```bash
+   cd test-plugin/test-test-datasource
+   ```
+
+3. Install dependencies:
+   ```bash
+   npm install
+   ```
+
+4. The components are already copied into `src/components/`. Build the plugin:
+   ```bash
+   npm run build
+   ```
+
+5. Verify the build succeeded - you should see `dist/module.js` and `dist/plugin.json`
+
+The test plugin demonstrates that registry components can be successfully integrated into Grafana plugins with proper imports and build configuration.
 
 ## Component Registry Format
 

@@ -1,0 +1,62 @@
+name: Test Grafana Plugin Integration
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test-plugin-integration:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      
+      - name: Install registry dependencies
+        run: npm ci
+      
+      - name: Build registry components
+        run: npm run build
+      
+      - name: Install plugin dependencies
+        working-directory: test-plugin/test-test-datasource
+        run: npm ci
+      
+      - name: Copy components to plugin
+        run: |
+          mkdir -p test-plugin/test-test-datasource/src/components/button
+          mkdir -p test-plugin/test-test-datasource/src/components/special-button
+          cp src/components/button/* test-plugin/test-test-datasource/src/components/button/
+          cp src/components/special-button/* test-plugin/test-test-datasource/src/components/special-button/
+          # Update imports in special-button to use relative path for plugin test
+          sed -i "s|@/components/button|../button|g" test-plugin/test-test-datasource/src/components/special-button/special-button.tsx
+      
+      - name: Build Grafana plugin
+        working-directory: test-plugin/test-test-datasource
+        run: npm run build
+      
+      - name: Verify plugin build artifacts
+        working-directory: test-plugin/test-test-datasource
+        run: |
+          ls -la dist/
+          if [ ! -f "dist/module.js" ]; then
+            echo "Error: module.js not found in dist/"
+            exit 1
+          fi
+          if [ ! -f "dist/plugin.json" ]; then
+            echo "Error: plugin.json not found in dist/"
+            exit 1
+          fi
+          echo "Plugin build successful!"
+      
+      - name: Run TypeScript type check on plugin
+        working-directory: test-plugin/test-test-datasource
+        run: npm run typecheck

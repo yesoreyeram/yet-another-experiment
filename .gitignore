@@ -2,3 +2,5 @@ node_modules/
 dist/
 *.log
 .DS_Store
+test-plugin/test-test-datasource/node_modules/
+test-plugin/test-test-datasource/dist/

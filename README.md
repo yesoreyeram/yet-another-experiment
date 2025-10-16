@@ -54,13 +54,101 @@ function App() {
 npm install yet-another-experiment @grafana/ui react react-dom
 ```
 
-### Install specific components
+### Using shadcn CLI (Recommended)
 
-You can also copy individual component files from the registry:
+This registry is compatible with shadcn-style component copying. You can use a custom CLI or manually copy components.
+
+#### Manual Component Installation
+
+1. **Set up path aliases in your project**
+
+Add to your `tsconfig.json`:
+```json
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"]
+    }
+  }
+}
+```
+
+Add to your `webpack.config.js` (or similar bundler config):
+```js
+{
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, 'src'),
+    },
+  },
+}
+```
+
+2. **Install required dependencies**
+
+```bash
+npm install @grafana/ui react react-dom
+```
+
+3. **Copy component files**
+
+For the Button component:
+```bash
+# Create directory
+mkdir -p src/components/button
+
+# Copy files from this registry
+curl -o src/components/button/button.tsx https://raw.githubusercontent.com/yesoreyeram/yet-another-experiment/main/src/components/button/button.tsx
+curl -o src/components/button/index.ts https://raw.githubusercontent.com/yesoreyeram/yet-another-experiment/main/src/components/button/index.ts
+```
+
+For the SpecialButton component (requires Button):
+```bash
+# Create directory
+mkdir -p src/components/special-button
+
+# Copy files from this registry
+curl -o src/components/special-button/special-button.tsx https://raw.githubusercontent.com/yesoreyeram/yet-another-experiment/main/src/components/special-button/special-button.tsx
+curl -o src/components/special-button/index.ts https://raw.githubusercontent.com/yesoreyeram/yet-another-experiment/main/src/components/special-button/index.ts
+```
+
+4. **Use the components**
+
+```tsx
+import { Button } from '@/components/button';
+import { SpecialButton } from '@/components/special-button';
+
+function App() {
+  return (
+    <>
+      <Button variant="primary">Click me</Button>
+      <SpecialButton special={true}>Special Button</SpecialButton>
+    </>
+  );
+}
+```
+
+### Install via npm (Alternative)
+
+If you prefer npm package installation instead of copying files:
+
+```bash
+npm install yet-another-experiment @grafana/ui react react-dom
+```
+
+Then import:
+```tsx
+import { Button, SpecialButton } from 'yet-another-experiment';
+```
+
+### Install specific components from GitHub Pages
+
+You can also download individual component files from the registry:
 
 1. Check the [registry.json](registry.json) file for component details
-2. Download the component files from the GitHub Pages deployment
-3. Copy them to your project
+2. Download the component files from the GitHub Pages deployment at `https://yesoreyeram.github.io/yet-another-experiment/`
+3. Copy them to your project following the path alias setup above
 
 ## Building from Source
 

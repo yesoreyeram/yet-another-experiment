@@ -1,6 +1,6 @@
 import React from 'react';
-import { Button } from '@/components/button';
-import type { ButtonComponentProps } from '@/components/button';
+import { Button } from '../button';
+import type { ButtonComponentProps } from '../button';
 import type { ButtonVariant, IconName } from '@grafana/ui';
 
 export type SpecialButtonProps = Omit<ButtonComponentProps, 'variant' | 'icon'> & {

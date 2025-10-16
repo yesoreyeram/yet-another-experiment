@@ -74,22 +74,27 @@ jobs:
           }
           EOF
       
-      - name: Add components using shadcn CLI
+      - name: Add components via shadcn CLI (using local registry)
         working-directory: test-plugin/test-test-datasource
         run: |
-          # Get the raw GitHub URL for the registry using commit SHA
-          COMMIT_SHA="${{ steps.git-info.outputs.sha }}"
-          REPO="yesoreyeram/yet-another-experiment"
-          BASE_URL="https://raw.githubusercontent.com/${REPO}/${COMMIT_SHA}/public/r"
+          # Start a local HTTP server to serve registry files
+          cd ../../
+          npx --yes http-server public -p 3456 &
+          SERVER_PID=$!
+          sleep 2
           
-          echo "Using registry URL: ${BASE_URL}"
-          echo "Commit SHA: ${COMMIT_SHA}"
+          cd test-plugin/test-test-datasource
           
-          # Add button component
-          npx --yes shadcn@latest add "${BASE_URL}/button.json" --overwrite --yes
+          # Add button component from local server
+          npx --yes shadcn@latest add http://localhost:3456/r/button.json --overwrite --yes
           
-          # Add special-button component
-          npx --yes shadcn@latest add "${BASE_URL}/special-button.json" --overwrite --yes
+          # Add special-button component from local server
+          npx --yes shadcn@latest add http://localhost:3456/r/special-button.json --overwrite --yes
+          
+          # Stop the server
+          kill $SERVER_PID || true
+          
+          echo "Components added successfully via shadcn CLI"
       
       - name: Update imports for plugin compatibility
         working-directory: test-plugin/test-test-datasource

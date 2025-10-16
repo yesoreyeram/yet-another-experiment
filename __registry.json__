@@ -1,0 +1,9 @@
+{
+  "$schema": "https://ui.shadcn.com/schema.json",
+  "styles": [
+    {
+      "name": "default",
+      "label": "Default"
+    }
+  ]
+}

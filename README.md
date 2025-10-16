@@ -25,9 +25,37 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 ## Available Scripts
 
 - `npm run dev` - Start the development server with Turbopack
-- `npm run build` - Build the production application
+- `npm run build` - Build the production application (static export)
 - `npm start` - Start the production server
 - `npm run lint` - Run ESLint
+
+## Deployment
+
+This project is configured to deploy automatically to GitHub Pages using GitHub Actions.
+
+### Automatic Deployment
+
+The website automatically deploys to GitHub Pages when changes are pushed to the `main` branch. The workflow:
+
+1. Builds the Next.js application as a static export
+2. Uploads the build artifacts
+3. Deploys to GitHub Pages
+
+### Manual Deployment
+
+You can also trigger a deployment manually from the Actions tab in GitHub.
+
+### Configuration
+
+To enable GitHub Pages deployment:
+
+1. Go to your repository settings
+2. Navigate to **Pages** under "Code and automation"
+3. Under "Build and deployment", set:
+   - **Source**: GitHub Actions
+4. The site will be available at `https://<username>.github.io/<repository-name>/`
+
+The deployment workflow is defined in `.github/workflows/deploy.yml`.
 
 ## Project Structure
 

@@ -56,7 +56,7 @@ jobs:
         run: |
           # Ensure components.json exists in the plugin
           # Keep "style" field as it's required by shadcn CLI validation
-          # Set cssVariables to false to avoid fetching color schemes
+          # Set ui alias to @/components (not @/components/ui) to match our registry structure
           cat > components.json << 'EOF'
           {
             "$schema": "https://ui.shadcn.com/schema.json",
@@ -73,7 +73,7 @@ jobs:
             "aliases": {
               "components": "@/components",
               "utils": "@/lib/utils",
-              "ui": "@/components/ui",
+              "ui": "@/components",
               "lib": "@/lib",
               "hooks": "@/hooks"
             }

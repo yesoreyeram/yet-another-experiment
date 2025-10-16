@@ -55,15 +55,17 @@ jobs:
         working-directory: test-plugin/test-test-datasource
         run: |
           # Ensure components.json exists in the plugin
-          # Note: Not setting "style" to avoid shadcn CLI using default registry
+          # Keep "style" field as it's required by shadcn CLI validation
+          # Set cssVariables to false to avoid fetching color schemes
           cat > components.json << 'EOF'
           {
             "$schema": "https://ui.shadcn.com/schema.json",
+            "style": "new-york",
             "rsc": false,
             "tsx": true,
             "tailwind": {
-              "config": "",
-              "css": "",
+              "config": "tailwind.config.js",
+              "css": "src/styles.css",
               "baseColor": "slate",
               "cssVariables": false,
               "prefix": ""
@@ -77,6 +79,11 @@ jobs:
             }
           }
           EOF
+          
+          # Create dummy tailwind config and css file (required for validation)
+          touch tailwind.config.js
+          mkdir -p src
+          touch src/styles.css
       
       - name: Add components via shadcn CLI (using local registry)
         working-directory: test-plugin/test-test-datasource

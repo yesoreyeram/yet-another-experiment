@@ -55,10 +55,10 @@ jobs:
         working-directory: test-plugin/test-test-datasource
         run: |
           # Ensure components.json exists in the plugin
+          # Note: Not setting "style" to avoid shadcn CLI using default registry
           cat > components.json << 'EOF'
           {
             "$schema": "https://ui.shadcn.com/schema.json",
-            "style": "default",
             "rsc": false,
             "tsx": true,
             "tailwind": {
@@ -79,17 +79,42 @@ jobs:
         run: |
           # Start a local HTTP server to serve registry files
           cd ../../
-          npx --yes http-server public -p 3456 &
+          npx --yes http-server public -p 3456 > /tmp/http-server.log 2>&1 &
           SERVER_PID=$!
-          sleep 2
+          sleep 3
+          
+          # Verify server is running and registry is accessible
+          echo "Testing registry accessibility..."
+          curl -f http://localhost:3456/r/button.json || { echo "Failed to access registry"; kill $SERVER_PID; exit 1; }
+          echo "Registry is accessible"
           
           cd test-plugin/test-test-datasource
           
           # Add button component from local server
+          echo "Adding button component..."
           npx --yes shadcn@latest add http://localhost:3456/r/button.json --overwrite --yes
           
+          # Verify button was added correctly
+          echo "Verifying button component..."
+          if [ -f "src/components/button/button.tsx" ]; then
+            echo "✓ Button added to correct location"
+          else
+            echo "✗ Button NOT in expected location"
+            find src/components -name "*.tsx" -o -name "*.ts"
+          fi
+          
           # Add special-button component from local server
+          echo "Adding special-button component..."
           npx --yes shadcn@latest add http://localhost:3456/r/special-button.json --overwrite --yes
+          
+          # Verify special-button was added correctly
+          echo "Verifying special-button component..."
+          if [ -f "src/components/special-button/special-button.tsx" ]; then
+            echo "✓ Special-button added to correct location"
+          else
+            echo "✗ Special-button NOT in expected location"
+            find src/components -name "*.tsx" -o -name "*.ts"
+          fi
           
           # Stop the server
           kill $SERVER_PID || true

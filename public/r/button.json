@@ -1,0 +1,21 @@
+{
+  "name": "button",
+  "type": "registry:ui",
+  "description": "Simple wrapper over Button element from @grafana/ui package",
+  "dependencies": [
+    "@grafana/ui"
+  ],
+  "registryDependencies": [],
+  "files": [
+    {
+      "path": "components/button/button.tsx",
+      "content": "import React from 'react';\nimport { Button as GrafanaButton } from '@grafana/ui';\nimport type { ButtonProps } from '@grafana/ui';\n\nexport type ButtonComponentProps = ButtonProps;\n\nexport const Button = React.forwardRef<HTMLButtonElement, ButtonComponentProps>((props, ref) => {\n  return <GrafanaButton ref={ref} {...props} />;\n});\n",
+      "type": "registry:ui"
+    },
+    {
+      "path": "components/button/index.ts",
+      "content": "export { Button } from './button';\nexport type { ButtonComponentProps } from './button';\n",
+      "type": "registry:component"
+    }
+  ]
+}

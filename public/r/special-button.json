@@ -1,0 +1,23 @@
+{
+  "name": "special-button",
+  "type": "registry:ui",
+  "description": "Special Button component that depends on Button",
+  "dependencies": [
+    "@grafana/ui"
+  ],
+  "registryDependencies": [
+    "button"
+  ],
+  "files": [
+    {
+      "path": "components/special-button/special-button.tsx",
+      "content": "import React from 'react';\nimport { Button } from '@/components/button';\nimport type { ButtonComponentProps } from '@/components/button';\nimport type { ButtonVariant, IconName } from '@grafana/ui';\n\nexport type SpecialButtonProps = Omit<ButtonComponentProps, 'variant' | 'icon'> & {\n  special?: boolean;\n};\n\nexport const SpecialButton = React.forwardRef<HTMLButtonElement, SpecialButtonProps>(\n  ({ special = true, ...props }, ref) => {\n    const variant: ButtonVariant = special ? 'primary' : 'secondary';\n    const icon: IconName | undefined = special ? 'star' : undefined;\n    \n    const buttonProps = {\n      ...props,\n      variant,\n      icon,\n    } as ButtonComponentProps;\n    \n    return <Button ref={ref} {...buttonProps} />;\n  }\n);\n",
+      "type": "registry:ui"
+    },
+    {
+      "path": "components/special-button/index.ts",
+      "content": "export { SpecialButton } from './special-button';\nexport type { SpecialButtonProps } from './special-button';\n",
+      "type": "registry:component"
+    }
+  ]
+}

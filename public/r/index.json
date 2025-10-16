@@ -1,0 +1,24 @@
+{
+  "name": "yet-another-experiment",
+  "description": "shadcn-style React component registry",
+  "components": [
+    {
+      "name": "button",
+      "description": "Simple wrapper over Button element from @grafana/ui package",
+      "dependencies": [
+        "@grafana/ui"
+      ],
+      "registryDependencies": []
+    },
+    {
+      "name": "special-button",
+      "description": "Special Button component that depends on Button",
+      "dependencies": [
+        "@grafana/ui"
+      ],
+      "registryDependencies": [
+        "button"
+      ]
+    }
+  ]
+}

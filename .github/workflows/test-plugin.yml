@@ -65,11 +65,15 @@ jobs:
               "config": "",
               "css": "",
               "baseColor": "slate",
-              "cssVariables": false
+              "cssVariables": false,
+              "prefix": ""
             },
             "aliases": {
               "components": "@/components",
-              "utils": "@/lib/utils"
+              "utils": "@/lib/utils",
+              "ui": "@/components/ui",
+              "lib": "@/lib",
+              "hooks": "@/hooks"
             }
           }
           EOF

@@ -1,0 +1,137 @@
+name: Publish Component Registry
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pages: write
+      id-token: write
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          registry-url: 'https://registry.npmjs.org'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Build components
+        run: npm run build
+      
+      - name: Create registry distribution
+        run: |
+          mkdir -p registry
+          cp -r dist registry/
+          cp -r src registry/
+          cp registry.json registry/
+          cp package.json registry/
+          cp README.md registry/
+      
+      - name: Upload registry artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: component-registry
+          path: registry/
+      
+      - name: Setup Pages
+        if: github.ref == 'refs/heads/main'
+        uses: actions/configure-pages@v4
+      
+      - name: Create index.html for GitHub Pages
+        if: github.ref == 'refs/heads/main'
+        run: |
+          cat > registry/index.html << 'EOF'
+          <!DOCTYPE html>
+          <html lang="en">
+          <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Component Registry</title>
+            <style>
+              body {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+                max-width: 1200px;
+                margin: 0 auto;
+                padding: 2rem;
+                line-height: 1.6;
+              }
+              h1 { color: #333; }
+              h2 { color: #555; margin-top: 2rem; }
+              code {
+                background: #f4f4f4;
+                padding: 0.2rem 0.4rem;
+                border-radius: 3px;
+                font-size: 0.9em;
+              }
+              pre {
+                background: #f4f4f4;
+                padding: 1rem;
+                border-radius: 5px;
+                overflow-x: auto;
+              }
+              .component {
+                border: 1px solid #ddd;
+                padding: 1rem;
+                margin: 1rem 0;
+                border-radius: 5px;
+              }
+            </style>
+          </head>
+          <body>
+            <h1>Component Registry</h1>
+            <p>shadcn-style React component registry</p>
+            
+            <h2>Available Components</h2>
+            <div class="component">
+              <h3>Button</h3>
+              <p>Simple wrapper over Button element from @grafana/ui package</p>
+              <p><strong>Files:</strong></p>
+              <ul>
+                <li><a href="src/components/button/button.tsx">button.tsx</a></li>
+                <li><a href="src/components/button/index.ts">index.ts</a></li>
+              </ul>
+            </div>
+            
+            <div class="component">
+              <h3>SpecialButton</h3>
+              <p>Special Button component that depends on Button</p>
+              <p><strong>Files:</strong></p>
+              <ul>
+                <li><a href="src/components/special-button/special-button.tsx">special-button.tsx</a></li>
+                <li><a href="src/components/special-button/index.ts">index.ts</a></li>
+              </ul>
+            </div>
+            
+            <h2>Downloads</h2>
+            <ul>
+              <li><a href="registry.json">registry.json</a></li>
+              <li><a href="package.json">package.json</a></li>
+            </ul>
+          </body>
+          </html>
+          EOF
+      
+      - name: Upload Pages artifact
+        if: github.ref == 'refs/heads/main'
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: registry/
+      
+      - name: Deploy to GitHub Pages
+        if: github.ref == 'refs/heads/main'
+        id: deployment
+        uses: actions/deploy-pages@v4

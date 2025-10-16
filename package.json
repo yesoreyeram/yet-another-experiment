@@ -1,0 +1,38 @@
+{
+  "name": "yet-another-experiment",
+  "version": "1.0.0",
+  "description": "shadcn-style React component registry",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "src",
+    "registry.json"
+  ],
+  "scripts": {
+    "build": "webpack && tsc --emitDeclarationOnly",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "react",
+    "components",
+    "registry",
+    "shadcn",
+    "grafana"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@grafana/ui": "^12.2.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/react": "^19.2.2",
+    "@types/react-dom": "^19.2.2",
+    "ts-loader": "^9.5.4",
+    "typescript": "^5.9.3",
+    "webpack": "^5.102.1",
+    "webpack-cli": "^6.0.1"
+  }
+}
